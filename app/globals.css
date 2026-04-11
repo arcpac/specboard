@@ -1,26 +1,195 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-geist-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
+  --background: #f4f2ec;
+  --foreground: #1b1e1a;
+  --card: #fffdf8;
+  --card-foreground: #1b1e1a;
+  --muted: #e9e3d7;
+  --muted-foreground: #625d52;
+  --border: #d8cfbf;
+  --input: #ece5d7;
+  --primary: #1f4f46;
+  --primary-foreground: #f7f5f0;
+  --accent: #d8ead8;
+  --accent-foreground: #17362e;
+  --destructive: #b9473d;
+  --destructive-foreground: #fff8f6;
+  --ring: #2d6b5f;
+  --sidebar: #1a211d;
+  --sidebar-foreground: #f2efe6;
+  --sidebar-muted: #95a397;
+  --sidebar-border: #2c382f;
+  --radius: 1rem;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted: var(--sidebar-muted);
+  --color-sidebar-border: var(--sidebar-border);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --radius-sm: calc(var(--radius) - 0.5rem);
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.5rem);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #121613;
+    --foreground: #f1efe8;
+    --card: #171c18;
+    --card-foreground: #f1efe8;
+    --muted: #1f2722;
+    --muted-foreground: #a2afa4;
+    --border: #2e3831;
+    --input: #202721;
+    --primary: #7cc0a7;
+    --primary-foreground: #0d1d18;
+    --accent: #24352e;
+    --accent-foreground: #d6ecde;
+    --destructive: #df6b60;
+    --destructive-foreground: #1c0907;
+    --ring: #8ad1b7;
+    --sidebar: #0d110f;
+    --sidebar-foreground: #edf2eb;
+    --sidebar-muted: #8a988c;
+    --sidebar-border: #212924;
   }
 }
 
+* {
+  border-color: var(--border);
+}
+
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  outline-color: var(--ring);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--primary) 18%, white);
+}
+
+.tiptap {
+  min-height: 22rem;
+  outline: none;
+}
+
+.tiptap > * + * {
+  margin-top: 0.75rem;
+}
+
+.tiptap h1,
+.tiptap h2,
+.tiptap h3 {
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.tiptap h1 {
+  font-size: 1.875rem;
+}
+
+.tiptap h2 {
+  font-size: 1.5rem;
+}
+
+.tiptap h3 {
+  font-size: 1.25rem;
+}
+
+.tiptap p {
+  line-height: 1.7;
+}
+
+.tiptap ul,
+.tiptap ol {
+  margin-left: 1.25rem;
+  padding-left: 0.5rem;
+}
+
+.tiptap ul {
+  list-style: disc;
+}
+
+.tiptap ol {
+  list-style: decimal;
+}
+
+.tiptap a {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+.tiptap table {
+  width: 100%;
+  border-collapse: collapse;
+  overflow: hidden;
+  border-radius: 0.75rem;
+}
+
+.tiptap td,
+.tiptap th {
+  border: 1px solid var(--border);
+  padding: 0.65rem 0.8rem;
+  vertical-align: top;
+}
+
+.tiptap th {
+  background: color-mix(in srgb, var(--muted) 75%, white);
+  font-weight: 600;
+}
+
+.tiptap ul[data-type="taskList"] {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.tiptap ul[data-type="taskList"] li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.tiptap ul[data-type="taskList"] li > label {
+  margin-top: 0.2rem;
+}
+
+.tiptap ul[data-type="taskList"] li > div {
+  flex: 1;
 }
