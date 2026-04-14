@@ -17,11 +17,11 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "rounded-3xl border border-dashed border-border bg-card px-8 py-14 text-center",
+        "rounded-xl border border-dashed border-border bg-card px-8 py-14 text-center shadow-sm",
         className,
       )}
     >
-      {icon ? <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted">{icon}</div> : null}
+      {icon ? <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-lg bg-accent">{icon}</div> : null}
       <h3 className="text-xl font-semibold">{title}</h3>
       <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
         {description}

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, FileText, KanbanSquare } from "lucide-react";
+import { Activity, FileText, Home, KanbanSquare } from "lucide-react";
 import type { WorkspaceRole } from "@/lib/permissions/workspaces";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -25,17 +25,29 @@ export function WorkspaceSidebar({
   const currentPath = usePathname();
 
   return (
-    <aside className="flex h-full w-full flex-col rounded-3xl border border-sidebar-border bg-sidebar p-4 text-sidebar-foreground lg:max-w-72">
-      <div className="rounded-2xl border border-sidebar-border bg-white/5 p-4">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sidebar-muted">
+    <aside
+      id="editor-left-sidebar"
+      aria-label={`${workspaceName} workspace navigation`}
+      className="sticky top-0 flex h-dvh w-full flex-col self-start border border-sidebar-border bg-sidebar p-2 text-sidebar-foreground shadow-sm"
+    >
+      <div className="px-2 pb-4 pt-2 text-center">
+        <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-sidebar-muted">
           Workspace
         </p>
-        <h2 className="mt-3 text-xl font-semibold">{workspaceName}</h2>
-        <Badge variant="outline" className="mt-4 border-white/10 text-sidebar-foreground">
+        <h2 className="mt-1 truncate text-xs font-semibold" title={workspaceName}>
+          {workspaceName}
+        </h2>
+        <Badge
+          variant="outline"
+          className="mt-2 max-w-full truncate border-sidebar-border px-2 py-0.5 text-[0.65rem] leading-4 text-sidebar-foreground"
+        >
           {role}
         </Badge>
       </div>
-      <nav className="mt-6 flex flex-1 flex-col gap-2">
+      <nav
+        className="flex flex-1 flex-col gap-2 border-t border-sidebar-border pt-4"
+        aria-label="Workspace sections"
+      >
         {items.map((item) => {
           const href = `/w/${workspaceSlug}/${item.href}`;
           const Icon = item.icon;
@@ -45,24 +57,28 @@ export function WorkspaceSidebar({
             <Link
               key={item.href}
               href={href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm transition-colors",
+                "flex min-h-20 flex-col items-center justify-center gap-2 rounded-md px-2 py-3 text-center text-xs font-medium leading-tight transition-colors",
                 isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-sidebar-foreground/88 hover:bg-white/8",
+                  ? "bg-sidebar-active text-primary"
+                  : "text-sidebar-muted hover:bg-sidebar-hover hover:text-sidebar-foreground",
               )}
             >
-              <Icon className="h-4 w-4" />
-              {item.label}
+              <Icon className="h-5 w-5 shrink-0" />
+              <span>{item.label}</span>
             </Link>
           );
         })}
       </nav>
       <Link
         href="/dashboard"
-        className="rounded-2xl border border-sidebar-border px-4 py-3 text-sm text-sidebar-muted transition-colors hover:bg-white/6 hover:text-sidebar-foreground"
+        aria-label="Back to dashboard"
+        title="Back to dashboard"
+        className="mt-4 flex min-h-20 flex-col items-center justify-center gap-2 rounded-md border border-sidebar-border px-2 py-3 text-center text-xs font-medium leading-tight text-sidebar-muted transition-colors hover:bg-sidebar-hover hover:text-sidebar-foreground"
       >
-        Back to dashboard
+        <Home className="h-5 w-5 shrink-0" />
+        <span>Dashboard</span>
       </Link>
     </aside>
   );

@@ -45,7 +45,7 @@ export function TaskStatusSelect({
             }
           });
         }}
-        className="h-9 rounded-lg border border-input bg-card px-3 text-sm"
+        className="h-9 rounded-md border border-input bg-card px-3 text-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <option value="todo">{labels.todo}</option>
         <option value="in_progress">{labels.in_progress}</option>

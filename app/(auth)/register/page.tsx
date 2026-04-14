@@ -13,7 +13,7 @@ export default async function RegisterPage() {
 
   return (
     <div className="grid w-full max-w-5xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="hidden flex-col justify-between rounded-[2rem] border border-border bg-card p-8 lg:flex">
+      <div className="hidden flex-col justify-between rounded-xl border border-border bg-card p-8 shadow-sm lg:flex">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
             Start a workspace
@@ -27,7 +27,7 @@ export default async function RegisterPage() {
           keep the team aligned with a lightweight board.
         </p>
       </div>
-      <Card className="border-white/70 bg-white/85 shadow-xl backdrop-blur">
+      <Card className="bg-card shadow-xl">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>

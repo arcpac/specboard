@@ -1,28 +1,36 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --font-geist-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
   --font-geist-mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
-  --background: #f4f2ec;
-  --foreground: #1b1e1a;
-  --card: #fffdf8;
-  --card-foreground: #1b1e1a;
-  --muted: #e9e3d7;
-  --muted-foreground: #625d52;
-  --border: #d8cfbf;
-  --input: #ece5d7;
-  --primary: #1f4f46;
-  --primary-foreground: #f7f5f0;
-  --accent: #d8ead8;
-  --accent-foreground: #17362e;
-  --destructive: #b9473d;
-  --destructive-foreground: #fff8f6;
-  --ring: #2d6b5f;
-  --sidebar: #1a211d;
-  --sidebar-foreground: #f2efe6;
-  --sidebar-muted: #95a397;
-  --sidebar-border: #2c382f;
-  --radius: 1rem;
+  --background: #f8fafc;
+  --foreground: #202124;
+  --card: #ffffff;
+  --card-foreground: #202124;
+  --document: #ffffff;
+  --workspace: #eef2f6;
+  --toolbar: #f8fafd;
+  --muted: #f1f3f4;
+  --muted-foreground: #5f6368;
+  --border: #d9dfe7;
+  --input: #cbd5e1;
+  --primary: #1a73e8;
+  --primary-hover: #1765cc;
+  --primary-active: #1557b0;
+  --primary-foreground: #ffffff;
+  --accent: #e8f0fe;
+  --accent-foreground: #174ea6;
+  --destructive: #b3261e;
+  --destructive-foreground: #ffffff;
+  --ring: #1a73e8;
+  --sidebar: #f8fafd;
+  --sidebar-foreground: #202124;
+  --sidebar-muted: #5f6368;
+  --sidebar-border: #dfe3ea;
+  --sidebar-hover: #eef3fb;
+  --sidebar-active: #e8f0fe;
+  --radius: 0.75rem;
 }
 
 @theme inline {
@@ -30,11 +38,16 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  --color-document: var(--document);
+  --color-workspace: var(--workspace);
+  --color-toolbar: var(--toolbar);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
   --color-primary-foreground: var(--primary-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
@@ -45,36 +58,15 @@
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-muted: var(--sidebar-muted);
   --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-hover: var(--sidebar-hover);
+  --color-sidebar-active: var(--sidebar-active);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --radius-sm: calc(var(--radius) - 0.5rem);
-  --radius-md: calc(var(--radius) - 0.25rem);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 0.5rem);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121613;
-    --foreground: #f1efe8;
-    --card: #171c18;
-    --card-foreground: #f1efe8;
-    --muted: #1f2722;
-    --muted-foreground: #a2afa4;
-    --border: #2e3831;
-    --input: #202721;
-    --primary: #7cc0a7;
-    --primary-foreground: #0d1d18;
-    --accent: #24352e;
-    --accent-foreground: #d6ecde;
-    --destructive: #df6b60;
-    --destructive-foreground: #1c0907;
-    --ring: #8ad1b7;
-    --sidebar: #0d110f;
-    --sidebar-foreground: #edf2eb;
-    --sidebar-muted: #8a988c;
-    --sidebar-border: #212924;
-  }
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
 }
 
 * {
@@ -86,6 +78,8 @@ body {
   background: var(--background);
   color: var(--foreground);
   min-height: 100%;
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -107,6 +101,21 @@ select {
 .tiptap {
   min-height: 22rem;
   outline: none;
+}
+
+.document-page > div,
+.document-page .document-page-editor {
+  min-height: 100%;
+}
+
+.document-page > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.document-page .document-page-editor {
+  box-sizing: border-box;
+  flex: 1;
 }
 
 .tiptap > * + * {
@@ -159,7 +168,7 @@ select {
   width: 100%;
   border-collapse: collapse;
   overflow: hidden;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
 }
 
 .tiptap td,
@@ -170,7 +179,7 @@ select {
 }
 
 .tiptap th {
-  background: color-mix(in srgb, var(--muted) 75%, white);
+  background: color-mix(in srgb, var(--muted) 82%, white);
   font-weight: 600;
 }
 

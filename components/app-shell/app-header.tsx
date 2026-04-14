@@ -6,11 +6,11 @@ import { LogoutButton } from "@/components/auth/logout-button";
 
 export function AppHeader({ user }: { user: Session["user"] }) {
   return (
-    <header className="sticky top-0 z-20 border-b border-border/80 bg-background/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
+    <header className="sticky top-0 z-20 border-b border-border bg-card/95 backdrop-blur">
+      <div className="mx-auto flex w-full items-center justify-between gap-4 px-6 py-4">
         <div className="flex items-center gap-3">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <PanelLeftDashed className="h-5 w-5" />
             </div>
             <div>
@@ -24,7 +24,7 @@ export function AppHeader({ user }: { user: Session["user"] }) {
           </Link>
         </div>
         <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-3 rounded-full border border-border bg-card px-3 py-2 sm:flex">
+          <div className="hidden items-center gap-3 rounded-md border border-border bg-card px-3 py-2 shadow-sm sm:flex">
             <Avatar className="h-8 w-8">
               <AvatarFallback name={user.name} />
             </Avatar>

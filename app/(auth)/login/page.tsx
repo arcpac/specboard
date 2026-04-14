@@ -19,7 +19,7 @@ export default async function LoginPage({
 
   return (
     <div className="grid w-full max-w-5xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
-      <div className="hidden flex-col justify-between rounded-[2rem] bg-primary p-8 text-primary-foreground lg:flex">
+      <div className="hidden flex-col justify-between rounded-xl bg-primary p-8 text-primary-foreground lg:flex">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-foreground/70">
             SpecBoard
@@ -33,14 +33,14 @@ export default async function LoginPage({
           into board tasks without leaving the document.
         </p>
       </div>
-      <Card className="border-white/70 bg-white/85 shadow-xl backdrop-blur">
+      <Card className="bg-card shadow-xl">
         <CardHeader>
           <CardTitle>Sign in</CardTitle>
           <CardDescription>
             Access your workspaces, documents, and board tasks.
           </CardDescription>
           {registered ? (
-            <div className="rounded-xl border border-accent bg-accent/50 px-4 py-3 text-sm text-accent-foreground">
+            <div className="rounded-lg border border-accent bg-accent/50 px-4 py-3 text-sm text-accent-foreground">
               Your account is ready. Sign in to continue.
             </div>
           ) : null}

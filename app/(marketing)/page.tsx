@@ -14,11 +14,11 @@ export default async function MarketingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(31,79,70,0.18),_transparent_35%),linear-gradient(180deg,_rgba(255,255,255,0.45),_rgba(244,242,236,1))]">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(26,115,232,0.14),_transparent_35%),linear-gradient(180deg,_rgba(255,255,255,0.9),_var(--background))]">
       <div className="mx-auto flex min-h-screen max-w-7xl flex-col px-6 py-8">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
+            <div className="flex h-11 w-11 items-center justify-center rounded-md bg-primary text-primary-foreground">
               <KanbanSquare className="h-5 w-5" />
             </div>
             <div>
@@ -80,9 +80,9 @@ export default async function MarketingPage() {
                   description: "Owner, editor, and viewer roles keep shared work clear.",
                 },
               ].map((item) => (
-                <Card key={item.title} className="border-white/70 bg-white/70 backdrop-blur">
+                <Card key={item.title} className="bg-card/90 backdrop-blur">
                   <CardHeader>
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent text-primary">
                       <item.icon className="h-5 w-5" />
                     </div>
                     <CardTitle>{item.title}</CardTitle>
@@ -96,12 +96,12 @@ export default async function MarketingPage() {
               ))}
             </div>
           </div>
-          <Card className="overflow-hidden border-white/60 bg-white/75 shadow-xl backdrop-blur">
+          <Card className="overflow-hidden bg-card/95 shadow-xl backdrop-blur">
             <CardHeader className="border-b border-border/60 bg-muted/50">
               <CardTitle>Today in the workspace</CardTitle>
             </CardHeader>
             <CardContent className="space-y-5 p-6">
-              <div className="rounded-2xl border border-border bg-card p-4">
+              <div className="rounded-lg border border-border bg-card p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                   Spec excerpt
                 </p>
@@ -119,7 +119,7 @@ export default async function MarketingPage() {
                 ].map((item) => (
                   <div
                     key={item.title}
-                    className="flex items-center justify-between rounded-2xl border border-border bg-card px-4 py-3"
+                    className="flex items-center justify-between rounded-md border border-border bg-card px-4 py-3"
                   >
                     <span className="font-medium">{item.title}</span>
                     <Badge variant={item.status === "Done" ? "accent" : "default"}>

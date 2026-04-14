@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
-import { RichTextEditor } from "@/components/editor/rich-text-editor";
-import { PageHeader } from "@/components/app-shell/page-header";
-import { getDocumentByIdForUser, getDocumentTasks } from "@/features/documents/queries";
+import { EditorDocumentShell } from "@/components/editor/editor-document-shell";
+import {
+  getDocumentByIdForUser,
+  getDocumentTasks,
+  getWorkspaceDocuments,
+} from "@/features/documents/queries";
 import { requireWorkspaceAccess } from "@/lib/auth/guards";
 import { canEditWorkspace } from "@/lib/permissions/workspaces";
+import { formatRelativeDate } from "@/lib/utils";
 
 export default async function DocumentPage({
   params,
@@ -22,28 +26,30 @@ export default async function DocumentPage({
     notFound();
   }
 
-  const linkedTasks = await getDocumentTasks(documentId);
+  const [linkedTasks, workspaceDocuments] = await Promise.all([
+    getDocumentTasks(documentId),
+    getWorkspaceDocuments(workspaceSlug, user.id),
+  ]);
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        eyebrow="Document"
-        title={documentRecord.document.title}
-        description="Draft the spec, capture context, and turn highlighted decisions into trackable tasks."
-      />
-      <RichTextEditor
-        workspaceSlug={workspaceSlug}
-        documentId={documentRecord.document.id}
-        initialTitle={documentRecord.document.title}
-        initialContent={documentRecord.document.contentJson as Record<string, unknown>}
-        canEdit={canEditWorkspace(membership.role)}
-        linkedTasks={linkedTasks.map(({ task }) => ({
-          id: task.id,
-          title: task.title,
-          status: task.status,
-          sourceExcerpt: task.sourceExcerpt,
-        }))}
-      />
-    </div>
+    <EditorDocumentShell
+      workspaceSlug={workspaceSlug}
+      documentId={documentRecord.document.id}
+      initialTitle={documentRecord.document.title}
+      initialContent={documentRecord.document.contentJson as Record<string, unknown>}
+      canEdit={canEditWorkspace(membership.role)}
+      initialLastSavedLabel={formatRelativeDate(documentRecord.document.updatedAt)}
+      linkedTasks={linkedTasks.map(({ task }) => ({
+        id: task.id,
+        title: task.title,
+        status: task.status,
+        sourceExcerpt: task.sourceExcerpt,
+      }))}
+      pages={workspaceDocuments.map(({ document }) => ({
+        id: document.id,
+        title: document.title,
+        updatedLabel: formatRelativeDate(document.updatedAt),
+      }))}
+    />
   );
 }

@@ -1,4 +1,4 @@
-import { WorkspaceSidebar } from "@/components/app-shell/workspace-sidebar";
+import { WorkspaceLayoutShell } from "@/components/app-shell/workspace-layout-shell";
 import { requireWorkspaceAccess } from "@/lib/auth/guards";
 
 export default async function WorkspaceLayout({
@@ -12,13 +12,12 @@ export default async function WorkspaceLayout({
   const { workspace, membership } = await requireWorkspaceAccess(workspaceSlug);
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
-      <WorkspaceSidebar
-        workspaceSlug={workspace.slug}
-        workspaceName={workspace.name}
-        role={membership.role}
-      />
-      <div className="min-w-0">{children}</div>
-    </div>
+    <WorkspaceLayoutShell
+      workspaceSlug={workspace.slug}
+      workspaceName={workspace.name}
+      role={membership.role}
+    >
+      {children}
+    </WorkspaceLayoutShell>
   );
 }

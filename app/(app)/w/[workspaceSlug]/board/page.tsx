@@ -31,7 +31,7 @@ export default async function BoardPage({
   }));
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <PageHeader
         eyebrow={workspace.name}
         title="Task board"
@@ -48,7 +48,7 @@ export default async function BoardPage({
               <CardContent className="space-y-4">
                 {column.tasks.length ? (
                   column.tasks.map(({ task, documentTitle }) => (
-                    <div key={task.id} className="rounded-2xl border border-border bg-muted/40 p-4">
+                    <div key={task.id} className="rounded-lg border border-border bg-muted/40 p-4">
                       <div className="flex flex-col gap-3">
                         <div>
                           <p className="font-medium">{task.title}</p>

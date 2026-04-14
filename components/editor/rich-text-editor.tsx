@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
+import type { Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Link from "@tiptap/extension-link";
 import { Table } from "@tiptap/extension-table";
@@ -11,87 +12,39 @@ import TableHeader from "@tiptap/extension-table-header";
 import TableRow from "@tiptap/extension-table-row";
 import TaskItem from "@tiptap/extension-task-item";
 import TaskList from "@tiptap/extension-task-list";
-import {
-  Bold,
-  CheckSquare,
-  Heading1,
-  Heading2,
-  Link2,
-  List,
-  Loader2,
-  Save,
-  Table2,
-} from "lucide-react";
 import { createTaskFromSelectionAction } from "@/features/tasks/actions";
 import { saveDocumentAction } from "@/features/documents/actions";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import type { TaskStatus } from "@/lib/permissions/workspaces";
-
-type LinkedTask = {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  sourceExcerpt: string;
-};
-
-function ToolbarButton({
-  onClick,
-  active,
-  disabled,
-  children,
-}: {
-  onClick: () => void;
-  active?: boolean;
-  disabled?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`inline-flex h-9 items-center justify-center rounded-lg border px-3 text-sm transition-colors ${
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "border-border bg-card text-foreground hover:bg-muted"
-      } disabled:cursor-not-allowed disabled:opacity-50`}
-    >
-      {children}
-    </button>
-  );
-}
+import { EditorPageHeader } from "./editor-page-header";
+import { EditorPagesPanel, type EditorPageNavigationItem } from "./editor-pages-panel";
+import { EditorToolbar } from "./editor-toolbar";
+import { EditorRightSidebar } from "./editor-right-sidebar";
+import type { EditorLinkedTask } from "./editor-store";
+import { useEditorStore } from "./editor-store";
 
 export function RichTextEditor({
   workspaceSlug,
   documentId,
-  initialTitle,
+  title,
+  onTitleChange,
+  lastSavedLabel,
   initialContent,
   canEdit,
   linkedTasks,
+  pages,
+  onSaved,
 }: {
   workspaceSlug: string;
   documentId: string;
-  initialTitle: string;
+  title: string;
+  onTitleChange: (title: string) => void;
+  lastSavedLabel: string;
   initialContent: Record<string, unknown>;
   canEdit: boolean;
-  linkedTasks: LinkedTask[];
+  linkedTasks: EditorLinkedTask[];
+  pages: EditorPageNavigationItem[];
+  onSaved: (updatedAt: string) => void;
 }) {
   const router = useRouter();
-  const [title, setTitle] = useState(initialTitle);
   const [selectionText, setSelectionText] = useState("");
   const [taskTitle, setTaskTitle] = useState("");
   const [taskDescription, setTaskDescription] = useState("");
@@ -99,6 +52,20 @@ export function RichTextEditor({
   const [isSaving, startSaveTransition] = useTransition();
   const [isTaskPending, startTaskTransition] = useTransition();
   const [taskDialogOpen, setTaskDialogOpen] = useState(false);
+  const setEditorSelectionText = useEditorStore((state) => state.setSelectionText);
+  const setEditorLinkedTasks = useEditorStore((state) => state.setLinkedTasks);
+  const toggleRightSidebar = useEditorStore((state) => state.toggleRightSidebar);
+
+  function updateSelectionSnapshot(nextEditor: Editor) {
+    const { from, to } = nextEditor.state.selection;
+    const text = nextEditor.state.doc.textBetween(from, to, " ").trim();
+    setSelectionText(text);
+    setEditorSelectionText(text);
+  }
+
+  useEffect(() => {
+    setEditorLinkedTasks(linkedTasks);
+  }, [linkedTasks, setEditorLinkedTasks]);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -107,7 +74,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "tiptap rounded-2xl bg-card px-6 py-6 text-[15px] leading-7 text-foreground",
+          "tiptap document-page-editor bg-document px-6 py-8 text-[15px] leading-7 text-foreground sm:px-12 sm:py-12 md:px-[22mm] md:py-[24mm]",
       },
     },
     extensions: [
@@ -131,18 +98,12 @@ export function RichTextEditor({
       }),
     ],
     onSelectionUpdate: ({ editor: nextEditor }) => {
-      const { from, to } = nextEditor.state.selection;
-      const text = nextEditor.state.doc.textBetween(from, to, " ").trim();
-      setSelectionText(text);
+      updateSelectionSnapshot(nextEditor);
     },
     onCreate: ({ editor: nextEditor }) => {
-      const { from, to } = nextEditor.state.selection;
-      const text = nextEditor.state.doc.textBetween(from, to, " ").trim();
-      setSelectionText(text);
+      updateSelectionSnapshot(nextEditor);
     },
   });
-
-  const taskPreview = useMemo(() => selectionText.slice(0, 160), [selectionText]);
 
   async function handleSave() {
     if (!editor) {
@@ -161,6 +122,10 @@ export function RichTextEditor({
       if (!result.ok) {
         setFeedback(result.message ?? "Unable to save document.");
         return;
+      }
+
+      if (result.updatedAt) {
+        onSaved(result.updatedAt);
       }
 
       setFeedback("Document saved.");
@@ -222,186 +187,44 @@ export function RichTextEditor({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="space-y-4">
-        <Card>
-          <CardHeader className="gap-4">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="space-y-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
-                  Document editor
-                </p>
-                <Input
-                  value={title}
-                  onChange={(event) => setTitle(event.target.value)}
-                  className="h-12 border-0 bg-transparent px-0 text-3xl font-semibold shadow-none focus-visible:outline-none"
-                  disabled={!canEdit}
-                />
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {feedback ? (
-                  <span className="text-sm text-muted-foreground">{feedback}</span>
-                ) : null}
-                <Button onClick={handleSave} disabled={!canEdit || isSaving}>
-                  {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Save className="h-4 w-4" />
-                  )}
-                  Save
-                </Button>
-              </div>
-            </div>
-            <Separator />
-            <div className="flex flex-wrap gap-2">
-              <ToolbarButton
-                onClick={() => editor?.chain().focus().toggleBold().run()}
-                active={editor?.isActive("bold")}
-                disabled={!canEdit}
-              >
-                <Bold className="h-4 w-4" />
-              </ToolbarButton>
-              <ToolbarButton
-                onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
-                active={editor?.isActive("heading", { level: 1 })}
-                disabled={!canEdit}
-              >
-                <Heading1 className="h-4 w-4" />
-              </ToolbarButton>
-              <ToolbarButton
-                onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
-                active={editor?.isActive("heading", { level: 2 })}
-                disabled={!canEdit}
-              >
-                <Heading2 className="h-4 w-4" />
-              </ToolbarButton>
-              <ToolbarButton
-                onClick={() => editor?.chain().focus().toggleBulletList().run()}
-                active={editor?.isActive("bulletList")}
-                disabled={!canEdit}
-              >
-                <List className="h-4 w-4" />
-              </ToolbarButton>
-              <ToolbarButton
-                onClick={() => editor?.chain().focus().toggleTaskList().run()}
-                active={editor?.isActive("taskList")}
-                disabled={!canEdit}
-              >
-                <CheckSquare className="h-4 w-4" />
-              </ToolbarButton>
-              <ToolbarButton
-                onClick={handleLinkToggle}
-                active={editor?.isActive("link")}
-                disabled={!canEdit}
-              >
-                <Link2 className="h-4 w-4" />
-              </ToolbarButton>
-              <ToolbarButton
-                onClick={() =>
-                  editor
-                    ?.chain()
-                    .focus()
-                    .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-                    .run()
-                }
-                disabled={!canEdit}
-              >
-                <Table2 className="h-4 w-4" />
-              </ToolbarButton>
-              <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    disabled={!canEdit || !selectionText.trim()}
-                    onClick={() => setTaskTitle(selectionText.slice(0, 80))}
-                  >
-                    Create task from selection
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Create task</DialogTitle>
-                    <DialogDescription>
-                      Tasks keep a snapshot of the selected text and link back to this
-                      document.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="mt-5 space-y-4">
-                    <div className="rounded-xl border border-border bg-muted/60 p-4 text-sm text-muted-foreground">
-                      {taskPreview || "Select some text in the editor first."}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="task-title">Task title</Label>
-                      <Input
-                        id="task-title"
-                        value={taskTitle}
-                        onChange={(event) => setTaskTitle(event.target.value)}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="task-description">Description</Label>
-                      <Textarea
-                        id="task-description"
-                        value={taskDescription}
-                        onChange={(event) => setTaskDescription(event.target.value)}
-                        placeholder="Optional implementation notes or context."
-                      />
-                    </div>
-                    <Button
-                      className="w-full"
-                      onClick={handleCreateTask}
-                      disabled={isTaskPending}
-                    >
-                      {isTaskPending ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : null}
-                      Create task
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-          </CardHeader>
-          <CardContent>
+    <div className="-mx-6 grid min-h-dvh grid-rows-[auto_minmax(0,1fr)] overflow-x-clip bg-workspace">
+      <EditorPageHeader
+        title={title}
+        onTitleChange={onTitleChange}
+        canEdit={canEdit}
+        lastSavedLabel={lastSavedLabel}
+      >
+        <EditorToolbar
+          editor={editor}
+          canEdit={canEdit}
+          feedback={feedback}
+          isSaving={isSaving}
+          isTaskPending={isTaskPending}
+          selectionText={selectionText}
+          taskTitle={taskTitle}
+          taskDescription={taskDescription}
+          taskDialogOpen={taskDialogOpen}
+          onSave={handleSave}
+          onToggleRightSidebar={toggleRightSidebar}
+          onLinkToggle={handleLinkToggle}
+          onTaskDialogOpenChange={setTaskDialogOpen}
+          onTaskTitleChange={setTaskTitle}
+          onTaskDescriptionChange={setTaskDescription}
+          onCreateTask={handleCreateTask}
+        />
+      </EditorPageHeader>
+      <div className="relative flex min-h-0 min-w-0">
+        <EditorPagesPanel
+          workspaceSlug={workspaceSlug}
+          currentDocumentId={documentId}
+          pages={pages}
+        />
+        <main className="min-w-0 flex-1 overflow-x-auto px-4 py-8 sm:px-8 lg:px-12">
+          <div className="document-page mx-auto aspect-[210/297] w-full max-w-[210mm] bg-document text-card-foreground shadow-[0_18px_45px_rgba(15,23,42,0.14),0_2px_6px_rgba(15,23,42,0.08)] ring-1 ring-[rgba(15,23,42,0.08)]">
             <EditorContent editor={editor} />
-          </CardContent>
-        </Card>
-      </div>
-      <div className="space-y-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Linked tasks</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {linkedTasks.length ? (
-              linkedTasks.map((task) => (
-                <div key={task.id} className="rounded-2xl border border-border bg-muted/40 p-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-medium">{task.title}</p>
-                    <Badge variant="accent">{task.status.replace("_", " ")}</Badge>
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">{task.sourceExcerpt}</p>
-                </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No tasks have been created from this document yet.
-              </p>
-            )}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Selection snapshot</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-6 text-muted-foreground">
-              {selectionText
-                ? selectionText
-                : "Highlight text in the editor to turn it into a board task."}
-            </p>
-          </CardContent>
-        </Card>
+          </div>
+        </main>
+        <EditorRightSidebar />
       </div>
     </div>
   );
