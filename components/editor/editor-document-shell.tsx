@@ -4,7 +4,6 @@ import { useState } from "react";
 import { RichTextEditor } from "@/components/editor/rich-text-editor";
 import { formatRelativeDate } from "@/lib/utils";
 import type { EditorLinkedTask } from "./editor-store";
-import type { EditorPageNavigationItem } from "./editor-pages-panel";
 
 export function EditorDocumentShell({
   workspaceSlug,
@@ -13,7 +12,6 @@ export function EditorDocumentShell({
   initialContent,
   canEdit,
   linkedTasks,
-  pages,
   initialLastSavedLabel,
 }: {
   workspaceSlug: string;
@@ -22,7 +20,6 @@ export function EditorDocumentShell({
   initialContent: Record<string, unknown>;
   canEdit: boolean;
   linkedTasks: EditorLinkedTask[];
-  pages: EditorPageNavigationItem[];
   initialLastSavedLabel: string;
 }) {
   const [title, setTitle] = useState(initialTitle);
@@ -42,7 +39,6 @@ export function EditorDocumentShell({
       initialContent={initialContent}
       canEdit={canEdit}
       linkedTasks={linkedTasks}
-      pages={pages}
       onSaved={handleSaved}
     />
   );

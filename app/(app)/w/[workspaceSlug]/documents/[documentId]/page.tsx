@@ -3,7 +3,6 @@ import { EditorDocumentShell } from "@/components/editor/editor-document-shell";
 import {
   getDocumentByIdForUser,
   getDocumentTasks,
-  getWorkspaceDocuments,
 } from "@/features/documents/queries";
 import { requireWorkspaceAccess } from "@/lib/auth/guards";
 import { canEditWorkspace } from "@/lib/permissions/workspaces";
@@ -26,10 +25,7 @@ export default async function DocumentPage({
     notFound();
   }
 
-  const [linkedTasks, workspaceDocuments] = await Promise.all([
-    getDocumentTasks(documentId),
-    getWorkspaceDocuments(workspaceSlug, user.id),
-  ]);
+  const linkedTasks = await getDocumentTasks(documentId);
 
   return (
     <EditorDocumentShell
@@ -44,11 +40,6 @@ export default async function DocumentPage({
         title: task.title,
         status: task.status,
         sourceExcerpt: task.sourceExcerpt,
-      }))}
-      pages={workspaceDocuments.map(({ document }) => ({
-        id: document.id,
-        title: document.title,
-        updatedLabel: formatRelativeDate(document.updatedAt),
       }))}
     />
   );
