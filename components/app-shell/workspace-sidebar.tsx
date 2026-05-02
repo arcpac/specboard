@@ -17,10 +17,12 @@ export function WorkspaceSidebar({
   workspaceSlug,
   workspaceName,
   role,
+  fixed = false,
 }: {
   workspaceSlug: string;
   workspaceName: string;
   role: WorkspaceRole;
+  fixed?: boolean;
 }) {
   const currentPath = usePathname();
 
@@ -28,7 +30,10 @@ export function WorkspaceSidebar({
     <aside
       id="editor-left-sidebar"
       aria-label={`${workspaceName} workspace navigation`}
-      className="sticky top-0 flex h-dvh w-full flex-col self-start border border-sidebar-border bg-sidebar p-2 text-sidebar-foreground shadow-sm"
+      className={cn(
+        "sticky top-0 flex h-dvh w-full flex-col self-start border border-sidebar-border bg-sidebar p-2 text-sidebar-foreground shadow-sm",
+        fixed && "lg:fixed lg:left-0 lg:top-[77px] lg:h-[calc(100dvh-77px)] lg:w-[7.5rem]",
+      )}
     >
       <div className="px-2 pb-4 pt-2 text-center">
         <p className="text-[0.65rem] font-semibold uppercase tracking-[0.16em] text-sidebar-muted">
@@ -45,7 +50,7 @@ export function WorkspaceSidebar({
         </Badge>
       </div>
       <nav
-        className="flex flex-1 flex-col gap-2 border-t border-sidebar-border pt-4"
+        className="flex flex-1 flex-col border-t border-sidebar-border pt-4"
         aria-label="Workspace sections"
       >
         {items.map((item) => {

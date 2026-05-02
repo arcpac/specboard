@@ -5,13 +5,13 @@ import { revalidatePath } from "next/cache";
 import { notFound, redirect } from "next/navigation";
 import { db } from "@/db";
 import { activityLogs, documents } from "@/db/schema";
+import { createEmptyDocumentContent } from "./content";
 import { requireWorkspaceAccess } from "@/lib/auth/guards";
 import { canEditWorkspace } from "@/lib/permissions/workspaces";
 import {
   createDocumentSchema,
   saveDocumentSchema,
 } from "./schemas";
-import { EMPTY_DOCUMENT_CONTENT } from "./queries";
 
 export async function createDocumentAction(formData: FormData) {
   const workspaceSlug = String(formData.get("workspaceSlug") ?? "");
@@ -35,7 +35,7 @@ export async function createDocumentAction(formData: FormData) {
     .values({
       workspaceId: workspace.id,
       title: parsed.data.title,
-      contentJson: EMPTY_DOCUMENT_CONTENT,
+      contentJson: createEmptyDocumentContent(),
       createdById: user.id,
       updatedById: user.id,
     })

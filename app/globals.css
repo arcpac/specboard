@@ -99,12 +99,11 @@ select {
 }
 
 .tiptap {
-  min-height: 22rem;
   outline: none;
 }
 
 .document-page > div,
-.document-page .document-page-editor {
+.document-page .document-page-content {
   min-height: 100%;
 }
 
@@ -113,9 +112,8 @@ select {
   flex-direction: column;
 }
 
-.document-page .document-page-editor {
+.document-page .document-block-editor {
   box-sizing: border-box;
-  flex: 1;
 }
 
 .tiptap > * + * {

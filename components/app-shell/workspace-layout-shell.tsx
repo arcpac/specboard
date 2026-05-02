@@ -18,6 +18,7 @@ export function WorkspaceLayoutShell({
 }) {
   const pathname = usePathname();
   const isEditorRoute = /^\/w\/[^/]+\/documents\/[^/]+/.test(pathname);
+  const isDocumentsIndexRoute = pathname === `/w/${workspaceSlug}/documents`;
 
   if (isEditorRoute) {
     return <div className="min-w-0">{children}</div>;
@@ -25,11 +26,14 @@ export function WorkspaceLayoutShell({
 
   return (
     <div className="grid gap-2 pr-2 lg:grid-cols-[7.5rem_minmax(0,1fr)]">
-      <WorkspaceSidebar
-        workspaceSlug={workspaceSlug}
-        workspaceName={workspaceName}
-        role={role}
-      />
+      <div className="min-w-0">
+        <WorkspaceSidebar
+          workspaceSlug={workspaceSlug}
+          workspaceName={workspaceName}
+          role={role}
+          fixed={isDocumentsIndexRoute}
+        />
+      </div>
       <div className="min-w-0">{children}</div>
     </div>
   );

@@ -2,21 +2,6 @@ import { and, desc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { documents, tasks, workspaceMembers, workspaces } from "@/db/schema";
 
-export const EMPTY_DOCUMENT_CONTENT = {
-  type: "doc",
-  content: [
-    {
-      type: "paragraph",
-      content: [
-        {
-          type: "text",
-          text: "Start writing your product spec here.",
-        },
-      ],
-    },
-  ],
-};
-
 export async function getWorkspaceDocuments(workspaceSlug: string, userId: string) {
   return db
     .select({

@@ -1,15 +1,13 @@
-import Link from "next/link";
-import { FilePlus2, FileText } from "lucide-react";
-import { createDocumentAction } from "@/features/documents/actions";
+import { FileText } from "lucide-react";
+import { CreateDocumentDialog } from "@/components/documents/create-document-dialog";
+import { DocumentsTable } from "@/components/documents/documents-table";
 import { getWorkspaceDocuments } from "@/features/documents/queries";
 import { requireWorkspaceAccess } from "@/lib/auth/guards";
 import { canEditWorkspace } from "@/lib/permissions/workspaces";
 import { formatRelativeDate } from "@/lib/utils";
 import { EmptyState } from "@/components/app-shell/empty-state";
 import { PageHeader } from "@/components/app-shell/page-header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default async function WorkspaceDocumentsPage({
   params,
@@ -20,6 +18,13 @@ export default async function WorkspaceDocumentsPage({
   const { user, workspace, membership } = await requireWorkspaceAccess(workspaceSlug);
   const documents = await getWorkspaceDocuments(workspaceSlug, user.id);
   const canEdit = canEditWorkspace(membership.role);
+  const documentRows = documents.map(({ document }) => ({
+    id: document.id,
+    title: document.title,
+    href: `/w/${workspaceSlug}/documents/${document.id}`,
+    updatedAtLabel: formatRelativeDate(document.updatedAt),
+    createdAtLabel: formatRelativeDate(document.createdAt),
+  }));
 
   return (
     <div className="space-y-8">
@@ -27,49 +32,15 @@ export default async function WorkspaceDocumentsPage({
         eyebrow={workspace.name}
         title="Documents"
         description="Rich specs, notes, and decision records live here. Open one to write and convert selected text into tasks."
+        actions={canEdit ? <CreateDocumentDialog workspaceSlug={workspaceSlug} /> : null}
       />
 
-      {canEdit ? (
+      {documents.length ? (
         <Card>
-          <CardHeader>
-            <CardTitle>Create a new document</CardTitle>
-            <CardDescription>
-              Start with a title, then open the editor to draft the full spec.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form action={createDocumentAction} className="flex flex-col gap-3 md:flex-row">
-              <input type="hidden" name="workspaceSlug" value={workspaceSlug} />
-              <Input name="title" placeholder="New product spec" required className="md:flex-1" />
-              <Button type="submit">
-                <FilePlus2 className="h-4 w-4" />
-                Create document
-              </Button>
-            </form>
+          <CardContent className="p-0">
+            <DocumentsTable documents={documentRows} canEdit={canEdit} />
           </CardContent>
         </Card>
-      ) : null}
-
-      {documents.length ? (
-        <div className="grid gap-4">
-          {documents.map(({ document }) => (
-            <Card key={document.id}>
-              <CardContent className="flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold">{document.title}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Updated {formatRelativeDate(document.updatedAt)}
-                  </p>
-                </div>
-                <Button asChild variant="secondary">
-                  <Link href={`/w/${workspaceSlug}/documents/${document.id}`}>
-                    Open document
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       ) : (
         <EmptyState
           title="No documents yet"

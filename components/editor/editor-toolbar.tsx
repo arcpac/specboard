@@ -70,6 +70,7 @@ export function EditorToolbar({
   onSave,
   onToggleRightSidebar,
   onLinkToggle,
+  onInsertTableBlock,
   onTaskDialogOpenChange,
   onTaskTitleChange,
   onTaskDescriptionChange,
@@ -87,6 +88,7 @@ export function EditorToolbar({
   onSave: () => void;
   onToggleRightSidebar: () => void;
   onLinkToggle: () => void;
+  onInsertTableBlock: () => void;
   onTaskDialogOpenChange: (open: boolean) => void;
   onTaskTitleChange: (title: string) => void;
   onTaskDescriptionChange: (description: string) => void;
@@ -126,53 +128,47 @@ export function EditorToolbar({
         <ToolbarButton
           onClick={() => editor?.chain().focus().toggleBold().run()}
           active={editor?.isActive("bold")}
-          disabled={!canEdit}
+          disabled={!canEdit || !editor}
         >
           <Bold className={compactIconClassName} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}
           active={editor?.isActive("heading", { level: 1 })}
-          disabled={!canEdit}
+          disabled={!canEdit || !editor}
         >
           <Heading1 className={compactIconClassName} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}
           active={editor?.isActive("heading", { level: 2 })}
-          disabled={!canEdit}
+          disabled={!canEdit || !editor}
         >
           <Heading2 className={compactIconClassName} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor?.chain().focus().toggleBulletList().run()}
           active={editor?.isActive("bulletList")}
-          disabled={!canEdit}
+          disabled={!canEdit || !editor}
         >
           <List className={compactIconClassName} />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor?.chain().focus().toggleTaskList().run()}
           active={editor?.isActive("taskList")}
-          disabled={!canEdit}
+          disabled={!canEdit || !editor}
         >
           <CheckSquare className={compactIconClassName} />
         </ToolbarButton>
         <ToolbarButton
           onClick={onLinkToggle}
           active={editor?.isActive("link")}
-          disabled={!canEdit}
+          disabled={!canEdit || !editor}
         >
           <Link2 className={compactIconClassName} />
         </ToolbarButton>
         <ToolbarButton
-          onClick={() =>
-            editor
-              ?.chain()
-              .focus()
-              .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-              .run()
-          }
+          onClick={onInsertTableBlock}
           disabled={!canEdit}
         >
           <Table2 className={compactIconClassName} />
